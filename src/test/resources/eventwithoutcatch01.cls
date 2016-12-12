@@ -27,18 +27,11 @@ USING Progress.Lang.* FROM PROPATH .
 
 CLASS eventwithoutcatch01 INHERITS UserControl: 
 
-
-
-
-
- 
-	
 	DEFINE PRIVATE VARIABLE components AS System.ComponentModel.IContainer NO-UNDO.
     DEFINE PRIVATE VARIABLE ultraComboEditor1 AS Infragistics.Win.UltraWinEditors.UltraComboEditor NO-UNDO.
     DEFINE PRIVATE VARIABLE ultraButton1 AS Infragistics.Win.Misc.UltraButton NO-UNDO.
+
 	CONSTRUCTOR PUBLIC TestControl ():
-		
-		
         SUPER().
         InitializeComponent().
         THIS-OBJECT:ComponentsCollection:ADD(THIS-OBJECT:components).
@@ -77,6 +70,7 @@ CLASS eventwithoutcatch01 INHERITS UserControl:
         THIS-OBJECT:ultraComboEditor1:Size = NEW System.Drawing.Size(144, 21).
         THIS-OBJECT:ultraComboEditor1:TabIndex = 1.
         THIS-OBJECT:ultraComboEditor1:GestureQueryStatus:Subscribe(THIS-OBJECT:ultraComboEditor1_GestureQueryStatus).
+        
         /*  */
         /* TestControl */
         /*  */

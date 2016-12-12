@@ -1,6 +1,9 @@
 package eu.rssw.cw.rules;
 
+import java.util.Iterator;
+
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.openedge.api.org.prorefactor.refactor.RefactorException;
 import org.testng.Assert;
@@ -12,7 +15,7 @@ public class EventWithoutCatchTest extends AbstractTest {
 
   @BeforeTest
   public void init() {
-    ruleKey = RuleKey.parse("consultingwerk-oe-main:NoOpRule");
+    ruleKey = RuleKey.parse("consultingwerk-oe-main:EventWithoutCatchRule");
   }
 
   @Test
@@ -21,7 +24,10 @@ public class EventWithoutCatchTest extends AbstractTest {
     EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null, "");
     rule.execute(inputFile, getParseUnit(inputFile));
 
-    Assert.assertEquals(context.allIssues().size(), 0);
+    Assert.assertEquals(context.allIssues().size(), 1);
+    Iterator<Issue> allIssues = context.allIssues().iterator();
+    Issue issue = allIssues.next();
+    Assert.assertEquals(issue.primaryLocation().textRange().start().line(), 95);
   }
 
 }

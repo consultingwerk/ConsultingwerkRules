@@ -1,5 +1,11 @@
 package eu.rssw.cw.rules;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.rule.RuleKey;
@@ -10,14 +16,16 @@ import org.sonar.plugins.openedge.api.checks.OpenEdgeProparseCheck;
 import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
 import org.sonar.plugins.openedge.api.org.prorefactor.core.JPNode;
 import org.sonar.plugins.openedge.api.org.prorefactor.core.NodeTypes;
+import org.sonar.plugins.openedge.api.org.prorefactor.core.nodetypes.BlockNode;
 import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.Parameter;
 import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.ParseUnit;
 import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.Routine;
 import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.Variable;
 
-@Rule(priority = Priority.CRITICAL, name = ".Net event without CATCH block", tags = {"consultingwerk"})
+@Rule(priority = Priority.CRITICAL, name = ".Net event handler without CATCH block", tags = {"consultingwerk"})
 @SqaleConstantRemediation(value = "1h")
 public class EventWithoutCatch extends OpenEdgeProparseCheck {
+  private static final Logger LOG = LoggerFactory.getLogger(EventWithoutCatch.class);
 
   public EventWithoutCatch(RuleKey ruleKey, SensorContext context, Licence licence, String serverId) {
     super(ruleKey, context, licence, serverId);
@@ -25,32 +33,83 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
 
   @Override
   public void execute(InputFile file, ParseUnit unit) {
-    for (Routine r : unit.getRootScope().getRoutineMap().values()) {
-      if (r.getProgressType() == NodeTypes.METHOD) {
-        r.getRoutineScope()
-        System.out.println("Routine " + r.getProgressType() + " " + r.fullName());
-        System.out.println("Params " + r.getParameters().size());
-        for (Parameter p : r.getParameters()) {
-          Variable v = (Variable) (p.getSymbol());
-          System.out.println(p.getSymbol().fullName() + " " + v.getClassName());
-        }
-      }
-    }
+    Set<String> subscribedEvents = getSubscribedEvents(unit.getTopNode());
 
-    for (JPNode node : unit.getTopNode().query(NodeTypes.SUBSCRIBE)) {
-      System.out.println("Node " + node);
-    }
-     /*for (SymbolScope scope :  unit.getRootScope().getChildScopes()) {
-       System.out.println(scope.toString());
-       System.out.println(scope.getRootBlock().isMethodBlock());
-       
-     }
-    for (JPNode methd : unit.getTopNode().query(NodeTypes.METHOD)) {
-      System.out.println("Method");
-      for (JPNode param : methd.query(NodeTypes.Method_parameter)) {
-        System.out.println("Parameter");
+    for (Routine routine : unit.getRootScope().getRoutineMap().values()) {
+      if (routine.getProgressType() != NodeTypes.METHOD)
+        continue;
+      if (!subscribedEvents.contains(routine.getName().toLowerCase(Locale.ENGLISH)))
+        continue;
+      LOG.trace("Inspecting method {}, {} parameters", routine.fullName(), routine.getParameters().size());
+
+      // Only two parameters
+      if (routine.getParameters().size() != 2)
+        continue;
+
+      Parameter firstParam = routine.getParameters().get(0);
+      // Look for information of first parameter, and specifically datatype
+      Variable var = (Variable) firstParam.getSymbol();
+      if ("System.Object".equalsIgnoreCase(var.getClassName()) && !hasCatchBlock((BlockNode) routine.getDefineNode())) {
+        reportIssue(file, routine.getDefineNode(), "No CATCH block in .Net event handler " + routine.getName());
       }
-    }*/
+    }
   }
 
+  /**
+   * Returns true if a method has a CATCH block at the root level
+   */
+  public boolean hasCatchBlock(BlockNode codeBlock) {
+    // Find outer code block node
+    JPNode outerCodeBlock = codeBlock.query(NodeTypes.Code_block).get(0);
+    // Shouldn't be null, but better avoid NPE
+    if (outerCodeBlock == null)
+      return false;
+
+    // Return CATCH one level below
+    JPNode catchNode = outerCodeBlock.findDirectChild(NodeTypes.CATCH);
+    return (catchNode != null);
+  }
+
+  /**
+   * Returns set of method names, which appear in subscribe() calls
+   */
+  private Set<String> getSubscribedEvents(JPNode topNode) {
+    Set<String> list = new HashSet<>();
+
+    // As SUBSCRIBE is a keyword, we have to look for this specific node type
+    for (JPNode node : topNode.query(NodeTypes.SUBSCRIBE)) {
+      LOG.trace("Found SUBSCRIBE node at {}:{} ...", node.getLine(), node.getColumn());
+
+      // Make sure there's something *after* SUBSCRIBE, and that's it's a method_param_list object, with one children
+      // (and two parenthesis)
+      if (node.nextSibling() == null)
+        continue;
+      if (node.nextSibling().getType() != NodeTypes.Method_param_list)
+        continue;
+      if (node.nextSibling().getDirectChildren().size() != 3)
+        continue;
+      LOG.trace(" ... with the right number of argument ...");
+
+      // Make sure the first (and only) param is an 'INPUT widget_ref', where first part is THIS-OBJECT and second part
+      // is an ID
+      JPNode param = node.nextSibling().getDirectChildren().get(1);
+      if (param.getType() != NodeTypes.INPUT)
+        continue;
+      if (param.firstChild().getType() != NodeTypes.Widget_ref)
+        continue;
+      if (param.firstChild().getDirectChildren().size() != 3)
+        continue;
+      if (param.firstChild().getDirectChildren().get(0).getType() != NodeTypes.THISOBJECT)
+        continue;
+      if (param.firstChild().getDirectChildren().get(2).getType() != NodeTypes.ID)
+        continue;
+      LOG.trace(" ... and the right type of argument ! Adding {} ",
+          param.firstChild().getDirectChildren().get(2).getText());
+
+      // Adding method name as lower-case (for future search)
+      list.add(param.firstChild().getDirectChildren().get(2).getText().toLowerCase(Locale.ENGLISH));
+    }
+
+    return list;
+  }
 }
