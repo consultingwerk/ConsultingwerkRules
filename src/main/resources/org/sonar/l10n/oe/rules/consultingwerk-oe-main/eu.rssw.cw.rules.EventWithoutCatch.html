@@ -1,11 +1,39 @@
-<p>To be written...</p>
+<p>As a general rule where GUI for .NET Event handler method should be having a CATCH Block.  
+If the event handler would not catch errors, the AVM would either display the default ABL error 
+message dialog or throw it as an Exception to the .NET CLR.</p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-
+    /*------------------------------------------------------------------------------
+        Purpose: Event handler for the ToolClick event of the ultraToolbarsManager1
+        Notes:
+        @param sender The reference to the object that raised the event
+        @param e The ToolClickEventArgs with the data for this event
+    ------------------------------------------------------------------------------*/
+    METHOD PRIVATE VOID ultraToolbarsManager1_ToolClick (sender AS System.Object,
+                                                         e AS Infragistics.Win.UltraWinToolbars.ToolClickEventArgs):
+ 
+        /* Event handler code */
+  
+    END METHOD.
 </pre>
 
 <h2>Compliant Solution</h2>
 <pre>
-
+    /*------------------------------------------------------------------------------
+        Purpose: Event handler for the ToolClick event of the ultraToolbarsManager1
+        Notes:
+        @param sender The reference to the object that raised the event
+        @param e The ToolClickEventArgs with the data for this event
+    ------------------------------------------------------------------------------*/
+    METHOD PRIVATE VOID ultraToolbarsManager1_ToolClick (sender AS System.Object,
+                                                         e AS Infragistics.Win.UltraWinToolbars.ToolClickEventArgs):
+ 
+        /* Event handler code */
+ 
+        CATCH err AS Progress.Lang.Error:
+            Consultingwerk.Util.ErrorHandler:ShowErrorMessage (err) . 
+        END CATCH .
+ 
+    END METHOD.
 </pre>
