@@ -9,7 +9,7 @@ import org.sonar.plugins.openedge.api.checks.OpenEdgeDumpFileCheck;
 import org.sonar.plugins.openedge.api.checks.OpenEdgeProparseCheck;
 import org.sonar.plugins.openedge.api.checks.OpenEdgeXrefCheck;
 
-import eu.rssw.cw.rules.NoOpRule;
+import eu.rssw.cw.rules.EventWithoutCatch;
 
 public class ConsultingwerkRulesRegistrar implements CheckRegistrar {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsultingwerkRulesRegistrar.class);
@@ -39,7 +39,7 @@ public class ConsultingwerkRulesRegistrar implements CheckRegistrar {
    */
   @SuppressWarnings("unchecked")
   public static Class<? extends OpenEdgeProparseCheck>[] ppCheckClasses() {
-    return new Class[] {NoOpRule.class};
+    return new Class[] {EventWithoutCatch.class};
   }
 
   @SuppressWarnings("unchecked")
