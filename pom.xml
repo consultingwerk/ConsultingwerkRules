@@ -4,7 +4,7 @@
 
   <groupId>eu.rssw.sonar.openedge</groupId>
   <artifactId>consultingwerk-rules-plugin</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>sonar-plugin</packaging>
 
   <name>Consultingwerk rules for OpenEdge plugin</name>
@@ -25,10 +25,6 @@
     <system>GitHub</system>
     <url>https://github.com/consultingwerk/ConsultingwerkRules/issues</url>
   </issueManagement>
-  <!-- <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci.rssw.eu</url>
-  </ciManagement> -->
 
   <developers>
     <developer>
@@ -39,7 +35,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.version>5.6</sonar.version>
     <sonar.pluginKey>consultingwerk-rules</sonar.pluginKey>
     <sonar.pluginName>Consultingwerk Rules</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.openedge.ConsultingwerkRules</sonar.pluginClass>
@@ -49,7 +44,7 @@
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>${sonar.version}</version>
+      <version>6.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -88,12 +83,15 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.16</version>
+        <version>1.17</version>
         <extensions>true</extensions>
         <configuration>
           <pluginKey>${sonar.pluginKey}</pluginKey>
           <pluginName>${sonar.pluginName}</pluginName>
           <pluginClass>${sonar.pluginClass}</pluginClass>
+          <basePlugin>openedge</basePlugin>
+          <sonarQubeMinVersion>5.6</sonarQubeMinVersion>
+          <sonarLintSupported>true</sonarLintSupported>
         </configuration>
       </plugin>
 
