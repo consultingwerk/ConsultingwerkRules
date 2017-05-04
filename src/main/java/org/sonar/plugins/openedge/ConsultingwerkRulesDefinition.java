@@ -19,7 +19,6 @@ public class ConsultingwerkRulesDefinition implements RulesDefinition {
     AnnotationBasedRulesDefinition annotationLoader = new AnnotationBasedRulesDefinition(repository,
         Constants.LANGUAGE_KEY);
     annotationLoader.addRuleClasses(false, Arrays.<Class> asList(ConsultingwerkRulesRegistrar.ppCheckClasses()));
-    annotationLoader.addRuleClasses(false, Arrays.<Class> asList(ConsultingwerkRulesRegistrar.xrefCheckClasses()));
     annotationLoader.addRuleClasses(false, Arrays.<Class> asList(ConsultingwerkRulesRegistrar.dbCheckClasses()));
 
     repository.done();
