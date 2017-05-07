@@ -4,7 +4,7 @@
 
   <groupId>eu.rssw.sonar.openedge</groupId>
   <artifactId>consultingwerk-rules-plugin</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>sonar-plugin</packaging>
 
   <name>Consultingwerk rules for OpenEdge plugin</name>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>eu.rssw.openedge.checks</groupId>
       <artifactId>openedge-checks-shaded</artifactId>
-      <version>1.3.11</version>
+      <version>1.3.12-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
