@@ -4,6 +4,13 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.prorefactor.core.JPNode;
+import org.prorefactor.core.NodeTypes;
+import org.prorefactor.core.nodetypes.BlockNode;
+import org.prorefactor.treeparser.Parameter;
+import org.prorefactor.treeparser.ParseUnit;
+import org.prorefactor.treeparser.Routine;
+import org.prorefactor.treeparser.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -14,13 +21,6 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.openedge.api.LicenceRegistrar.Licence;
 import org.sonar.plugins.openedge.api.checks.OpenEdgeProparseCheck;
 import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
-import org.sonar.plugins.openedge.api.org.prorefactor.core.JPNode;
-import org.sonar.plugins.openedge.api.org.prorefactor.core.NodeTypes;
-import org.sonar.plugins.openedge.api.org.prorefactor.core.nodetypes.BlockNode;
-import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.Parameter;
-import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.ParseUnit;
-import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.Routine;
-import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.Variable;
 
 @Rule(priority = Priority.CRITICAL, name = ".Net event handler without CATCH block", tags = {"consultingwerk"})
 @SqaleConstantRemediation(value = "1h")

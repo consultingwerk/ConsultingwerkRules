@@ -2,10 +2,10 @@ package eu.rssw.cw.rules;
 
 import java.util.Iterator;
 
+import org.prorefactor.refactor.RefactorException;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.plugins.openedge.api.org.prorefactor.refactor.RefactorException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;

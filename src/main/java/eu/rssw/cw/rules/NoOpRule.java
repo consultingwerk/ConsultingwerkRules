@@ -1,5 +1,6 @@
 package eu.rssw.cw.rules;
 
+import org.prorefactor.treeparser.ParseUnit;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.rule.RuleKey;
@@ -8,7 +9,6 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.openedge.api.LicenceRegistrar.Licence;
 import org.sonar.plugins.openedge.api.checks.OpenEdgeProparseCheck;
 import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
-import org.sonar.plugins.openedge.api.org.prorefactor.treeparser.ParseUnit;
 
 @Rule(priority = Priority.INFO, name = "No-op rule", tags = {"consultingwerk"})
 @SqaleConstantRemediation(value = "5min")

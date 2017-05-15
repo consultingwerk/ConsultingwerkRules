@@ -55,7 +55,7 @@
     </dependency>
     <dependency>
       <groupId>eu.rssw.openedge.checks</groupId>
-      <artifactId>openedge-checks-shaded</artifactId>
+      <artifactId>openedge-checks</artifactId>
       <version>1.3.12-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
