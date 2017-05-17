@@ -21,7 +21,7 @@ public class EventWithoutCatchTest extends AbstractTest {
   @Test
   public void test1() throws RefactorException {
     InputFile inputFile = getInputFile("eventwithoutcatch01.cls");
-    EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null, "");
+    EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null);
     rule.execute(inputFile, getParseUnit(inputFile));
 
     Assert.assertEquals(context.allIssues().size(), 1);

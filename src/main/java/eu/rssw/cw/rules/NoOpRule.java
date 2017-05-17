@@ -14,8 +14,8 @@ import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
 @SqaleConstantRemediation(value = "5min")
 public class NoOpRule extends OpenEdgeProparseCheck {
 
-  public NoOpRule(RuleKey ruleKey, SensorContext context, Licence licence, String serverId) {
-    super(ruleKey, context, licence, serverId);
+  public NoOpRule(RuleKey ruleKey, SensorContext context, Licence licence) {
+    super(ruleKey, context, licence);
   }
 
   @Override

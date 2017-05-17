@@ -27,8 +27,8 @@ import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
 public class EventWithoutCatch extends OpenEdgeProparseCheck {
   private static final Logger LOG = LoggerFactory.getLogger(EventWithoutCatch.class);
 
-  public EventWithoutCatch(RuleKey ruleKey, SensorContext context, Licence licence, String serverId) {
-    super(ruleKey, context, licence, serverId);
+  public EventWithoutCatch(RuleKey ruleKey, SensorContext context, Licence licence) {
+    super(ruleKey, context, licence);
   }
 
   @Override
