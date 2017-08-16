@@ -1,5 +1,6 @@
 package eu.rssw.cw.rules;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.prorefactor.refactor.RefactorException;
@@ -19,7 +20,7 @@ public class EventWithoutCatchTest extends AbstractTest {
   }
 
   @Test
-  public void test1() throws RefactorException {
+  public void test1() throws IOException, RefactorException {
     InputFile inputFile = getInputFile("eventwithoutcatch01.cls");
     EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null);
     rule.execute(inputFile, getParseUnit(inputFile));
