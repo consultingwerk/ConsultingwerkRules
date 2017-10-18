@@ -3,7 +3,6 @@ package eu.rssw.cw.rules;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.prorefactor.refactor.RefactorException;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.rule.RuleKey;
@@ -20,7 +19,7 @@ public class EventWithoutCatchTest extends AbstractTest {
   }
 
   @Test
-  public void test1() throws IOException, RefactorException {
+  public void test1() throws IOException {
     InputFile inputFile = getInputFile("eventwithoutcatch01.cls");
     EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null);
     rule.execute(inputFile, getParseUnit(inputFile));

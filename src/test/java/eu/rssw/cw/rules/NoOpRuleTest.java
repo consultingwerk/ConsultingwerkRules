@@ -2,7 +2,6 @@ package eu.rssw.cw.rules;
 
 import java.io.IOException;
 
-import org.prorefactor.refactor.RefactorException;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.testng.Assert;
@@ -18,7 +17,7 @@ public class NoOpRuleTest extends AbstractTest {
   }
 
   @Test
-  public void test1() throws IOException, RefactorException {
+  public void test1() throws IOException {
     InputFile inputFile = getInputFile("noop01.p");
     NoOpRule rule = new NoOpRule(ruleKey, context, null);
     rule.execute(inputFile, getParseUnit(inputFile));

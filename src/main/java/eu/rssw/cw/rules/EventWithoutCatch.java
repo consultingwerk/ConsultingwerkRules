@@ -4,9 +4,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.prorefactor.core.ABLNodeType;
 import org.prorefactor.core.JPNode;
-import org.prorefactor.core.NodeTypes;
 import org.prorefactor.core.nodetypes.BlockNode;
+import org.prorefactor.proparse.ProParserTokenTypes;
 import org.prorefactor.treeparser.Parameter;
 import org.prorefactor.treeparser.ParseUnit;
 import org.prorefactor.treeparser.symbols.Routine;
@@ -36,7 +37,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
     Set<String> subscribedEvents = getSubscribedEvents(unit.getTopNode());
 
     for (Routine routine : unit.getRootScope().getRoutineMap().values()) {
-      if (routine.getProgressType() != NodeTypes.METHOD)
+      if (routine.getProgressType() != ProParserTokenTypes.METHOD)
         continue;
       if (!subscribedEvents.contains(routine.getName().toLowerCase(Locale.ENGLISH)))
         continue;
@@ -60,13 +61,13 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
    */
   public boolean hasCatchBlock(BlockNode codeBlock) {
     // Find outer code block node
-    JPNode outerCodeBlock = codeBlock.query(NodeTypes.Code_block).get(0);
+    JPNode outerCodeBlock = codeBlock.query(ABLNodeType.CODE_BLOCK).get(0);
     // Shouldn't be null, but better avoid NPE
     if (outerCodeBlock == null)
       return false;
 
     // Return CATCH one level below
-    JPNode catchNode = outerCodeBlock.findDirectChild(NodeTypes.CATCH);
+    JPNode catchNode = outerCodeBlock.findDirectChild(ProParserTokenTypes.CATCH);
     return (catchNode != null);
   }
 
@@ -77,37 +78,37 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
     Set<String> list = new HashSet<>();
 
     // As SUBSCRIBE is a keyword, we have to look for this specific node type
-    for (JPNode node : topNode.query(NodeTypes.SUBSCRIBE)) {
+    for (JPNode node : topNode.query(ABLNodeType.SUBSCRIBE)) {
       LOG.trace("Found SUBSCRIBE node at {}:{} ...", node.getLine(), node.getColumn());
 
       // Make sure there's something *after* SUBSCRIBE, and that's it's a method_param_list object, with one children
       // (and two parenthesis)
-      if (node.nextSibling() == null)
+      if (node.getNextSibling() == null)
         continue;
-      if (node.nextSibling().getType() != NodeTypes.Method_param_list)
+      if (node.getNextSibling().getType() != ProParserTokenTypes.Method_param_list)
         continue;
-      if (node.nextSibling().getDirectChildren().size() != 3)
+      if (node.getNextSibling().getDirectChildren().size() != 3)
         continue;
       LOG.trace(" ... with the right number of argument ...");
 
       // Make sure the first (and only) param is an 'INPUT widget_ref', where first part is THIS-OBJECT and second part
       // is an ID
-      JPNode param = node.nextSibling().getDirectChildren().get(1);
-      if (param.getType() != NodeTypes.INPUT)
+      JPNode param = node.getNextSibling().getDirectChildren().get(1);
+      if (param.getType() != ProParserTokenTypes.INPUT)
         continue;
-      if (param.firstChild().getType() != NodeTypes.Widget_ref)
+      if (param.getFirstChild().getType() != ProParserTokenTypes.Widget_ref)
         continue;
-      if (param.firstChild().getDirectChildren().size() != 3)
+      if (param.getFirstChild().getDirectChildren().size() != 3)
         continue;
-      if (param.firstChild().getDirectChildren().get(0).getType() != NodeTypes.THISOBJECT)
+      if (param.getFirstChild().getDirectChildren().get(0).getType() != ProParserTokenTypes.THISOBJECT)
         continue;
-      if (param.firstChild().getDirectChildren().get(2).getType() != NodeTypes.ID)
+      if (param.getFirstChild().getDirectChildren().get(2).getType() != ProParserTokenTypes.ID)
         continue;
       LOG.trace(" ... and the right type of argument ! Adding {} ",
-          param.firstChild().getDirectChildren().get(2).getText());
+          param.getFirstChild().getDirectChildren().get(2).getText());
 
       // Adding method name as lower-case (for future search)
-      list.add(param.firstChild().getDirectChildren().get(2).getText().toLowerCase(Locale.ENGLISH));
+      list.add(param.getFirstChild().getDirectChildren().get(2).getText().toLowerCase(Locale.ENGLISH));
     }
 
     return list;
