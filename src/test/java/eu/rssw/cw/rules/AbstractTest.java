@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.prorefactor.core.schema.Schema;
-import org.prorefactor.refactor.RefactorException;
 import org.prorefactor.refactor.RefactorSession;
 import org.prorefactor.refactor.settings.ProparseSettings;
 import org.prorefactor.treeparser.ParseUnit;
@@ -18,6 +17,8 @@ import org.sonar.plugins.openedge.api.Constants;
 import org.testng.annotations.BeforeMethod;
 
 import com.google.common.io.Files;
+
+import antlr.ANTLRException;
 
 public abstract class AbstractTest {
   private static final String BASEDIR = "src/test/resources/";
@@ -40,7 +41,7 @@ public abstract class AbstractTest {
     for (File file : new File(BASEDIR + "inc").listFiles()) {
       DefaultInputFile inputFile = new TestInputFileBuilder(BASEDIR, "inc/" + file.getName()).setLanguage(
           Constants.LANGUAGE_KEY).setType(Type.MAIN).initMetadata(
-              Files.toString(file, Charset.defaultCharset())).build();
+              Files.asCharSource(file, Charset.defaultCharset()).read()).build();
       context.fileSystem().add(inputFile);
     }
   }
@@ -48,7 +49,7 @@ public abstract class AbstractTest {
   public InputFile getInputFile(String fileName) throws IOException {
     DefaultInputFile inputFile = new TestInputFileBuilder(BASEDIR, fileName).setLanguage(
         Constants.LANGUAGE_KEY).setType(Type.MAIN).initMetadata(
-            Files.toString(new File(BASEDIR + fileName), Charset.defaultCharset())).build();
+            Files.asCharSource(new File(BASEDIR + fileName), Charset.defaultCharset()).read()).build();
     context.fileSystem().add(inputFile);
 
     return inputFile;
@@ -58,7 +59,7 @@ public abstract class AbstractTest {
     ParseUnit unit = new ParseUnit(file.file(), session);
     try {
       unit.treeParser01();
-    } catch (RefactorException caught) {
+    } catch (ANTLRException caught) {
       throw new RuntimeException("Unable to parse file", caught);
     }
     return unit;
