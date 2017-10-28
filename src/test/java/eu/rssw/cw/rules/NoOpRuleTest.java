@@ -20,7 +20,7 @@ public class NoOpRuleTest extends AbstractTest {
   public void test1() throws IOException {
     InputFile inputFile = getInputFile("noop01.p");
     NoOpRule rule = new NoOpRule(ruleKey, context, null);
-    rule.execute(inputFile, getParseUnit(inputFile));
+    rule.sensorExecute(inputFile, getParseUnit(inputFile));
 
     Assert.assertEquals(context.allIssues().size(), 0);
   }

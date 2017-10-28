@@ -22,7 +22,7 @@ public class EventWithoutCatchTest extends AbstractTest {
   public void test1() throws IOException {
     InputFile inputFile = getInputFile("eventwithoutcatch01.cls");
     EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null);
-    rule.execute(inputFile, getParseUnit(inputFile));
+    rule.sensorExecute(inputFile, getParseUnit(inputFile));
 
     Assert.assertEquals(context.allIssues().size(), 1);
     Iterator<Issue> allIssues = context.allIssues().iterator();
