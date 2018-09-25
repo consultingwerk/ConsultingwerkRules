@@ -21,7 +21,9 @@ public class EventWithoutCatchTest extends AbstractTest {
   @Test
   public void test1() throws IOException {
     InputFile inputFile = getInputFile("eventwithoutcatch01.cls");
-    EventWithoutCatch rule = new EventWithoutCatch(ruleKey, context, null);
+    EventWithoutCatch rule = new EventWithoutCatch();
+    rule.setContext(ruleKey, context, null);
+    rule.initialize();
     rule.sensorExecute(inputFile, getParseUnit(inputFile));
 
     Assert.assertEquals(context.allIssues().size(), 1);

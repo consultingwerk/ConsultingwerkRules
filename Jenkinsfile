@@ -2,17 +2,13 @@
 
 stage 'Build OpenEdge rules'
 node ('master') {
-  checkout([
-    $class: 'GitSCM',
-    branches: scm.branches,
-    extensions: scm.extensions + [[$class: 'CleanCheckout']],
-    userRemoteConfigs: scm.userRemoteConfigs
-  ])
-
+  checkout scm
   withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
-    sh "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true"
+    sh "git rev-parse HEAD > current-commit"
+    def currCommit = readFile('current-commit').replace("\n", "").replace("\r", "")
+    sh "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true -Dgit.commit=${currCommit}"
   }
-  archiveArtifacts artifacts: 'target/consultingwerk-rules-plugin-*.jar'
+  archiveArtifacts artifacts: 'target/*-plugin-*.jar'
   step([$class: 'Publisher', reportFilenamePattern: '**/testng-results.xml'])
 
   if ("master" == env.BRANCH_NAME) {

@@ -8,7 +8,7 @@ public class ConsultingwerkRules implements Plugin {
   public void define(Context context) {
     // Rules
     context.addExtension(ConsultingwerkRulesDefinition.class);
-    context.addExtension(ConsultingwerkRulesRegistrar.class);
+    context.addExtension(ConsultingwerkChecksRegistration.class);
   }
 
 }

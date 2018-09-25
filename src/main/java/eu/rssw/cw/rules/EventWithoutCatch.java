@@ -15,11 +15,8 @@ import org.prorefactor.treeparser.symbols.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.openedge.api.LicenceRegistrar.Licence;
 import org.sonar.plugins.openedge.api.checks.OpenEdgeProparseCheck;
 import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
 
@@ -27,10 +24,6 @@ import org.sonar.plugins.openedge.api.model.SqaleConstantRemediation;
 @SqaleConstantRemediation(value = "1h")
 public class EventWithoutCatch extends OpenEdgeProparseCheck {
   private static final Logger LOG = LoggerFactory.getLogger(EventWithoutCatch.class);
-
-  public EventWithoutCatch(RuleKey ruleKey, SensorContext context, Licence licence) {
-    super(ruleKey, context, licence);
-  }
 
   @Override
   public void execute(InputFile file, ParseUnit unit) {
