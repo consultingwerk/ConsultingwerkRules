@@ -4,7 +4,7 @@
 
   <groupId>eu.rssw.sonar.openedge</groupId>
   <artifactId>consultingwerk-rules-plugin</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <packaging>sonar-plugin</packaging>
 
   <name>Consultingwerk rules for OpenEdge plugin</name>
@@ -46,19 +46,14 @@
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>6.6</version>
+      <version>7.9</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>eu.rssw.openedge.checks</groupId>
-      <artifactId>openedge-checks</artifactId>
-      <version>2.2.0</version>
+      <groupId>eu.rssw.sonar.openedge</groupId>
+      <artifactId>sonar-openedge-plugin</artifactId>
+      <version>2.7.1</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.5</version>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
@@ -86,7 +81,7 @@
           <pluginName>${sonar.pluginName}</pluginName>
           <pluginClass>${sonar.pluginClass}</pluginClass>
           <basePlugin>openedge</basePlugin>
-          <sonarQubeMinVersion>6.6</sonarQubeMinVersion>
+          <sonarQubeMinVersion>6.7</sonarQubeMinVersion>
           <sonarLintSupported>true</sonarLintSupported>
           <archive>
             <manifestEntries>

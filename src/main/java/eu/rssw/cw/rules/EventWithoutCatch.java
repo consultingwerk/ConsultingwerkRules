@@ -7,7 +7,7 @@ import java.util.Set;
 import org.prorefactor.core.ABLNodeType;
 import org.prorefactor.core.JPNode;
 import org.prorefactor.core.nodetypes.BlockNode;
-import org.prorefactor.proparse.ProParserTokenTypes;
+import org.prorefactor.proparse.antlr4.Proparse;
 import org.prorefactor.treeparser.Parameter;
 import org.prorefactor.treeparser.ParseUnit;
 import org.prorefactor.treeparser.symbols.Routine;
@@ -30,7 +30,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
     Set<String> subscribedEvents = getSubscribedEvents(unit.getTopNode());
 
     for (Routine routine : unit.getRootScope().getRoutineMap().values()) {
-      if (routine.getProgressType() != ProParserTokenTypes.METHOD)
+      if (routine.getProgressType() != Proparse.METHOD)
         continue;
       if (!subscribedEvents.contains(routine.getName().toLowerCase(Locale.ENGLISH)))
         continue;
@@ -60,7 +60,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
       return false;
 
     // Return CATCH one level below
-    JPNode catchNode = outerCodeBlock.findDirectChild(ProParserTokenTypes.CATCH);
+    JPNode catchNode = outerCodeBlock.findDirectChild(Proparse.CATCH);
     return (catchNode != null);
   }
 
@@ -78,7 +78,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
       // (and two parenthesis)
       if (node.getNextSibling() == null)
         continue;
-      if (node.getNextSibling().getType() != ProParserTokenTypes.Method_param_list)
+      if (node.getNextSibling().getType() != Proparse.Method_param_list)
         continue;
       if (node.getNextSibling().getDirectChildren().size() != 3)
         continue;
@@ -87,15 +87,15 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
       // Make sure the first (and only) param is an 'INPUT widget_ref', where first part is THIS-OBJECT and second part
       // is an ID
       JPNode param = node.getNextSibling().getDirectChildren().get(1);
-      if (param.getType() != ProParserTokenTypes.INPUT)
+      if (param.getType() != Proparse.INPUT)
         continue;
-      if (param.getFirstChild().getType() != ProParserTokenTypes.Widget_ref)
+      if (param.getFirstChild().getType() != Proparse.Widget_ref)
         continue;
       if (param.getFirstChild().getDirectChildren().size() != 3)
         continue;
-      if (param.getFirstChild().getDirectChildren().get(0).getType() != ProParserTokenTypes.THISOBJECT)
+      if (param.getFirstChild().getDirectChildren().get(0).getType() != Proparse.THISOBJECT)
         continue;
-      if (param.getFirstChild().getDirectChildren().get(2).getType() != ProParserTokenTypes.ID)
+      if (param.getFirstChild().getDirectChildren().get(2).getType() != Proparse.ID)
         continue;
       LOG.trace(" ... and the right type of argument ! Adding {} ",
           param.getFirstChild().getDirectChildren().get(2).getText());
