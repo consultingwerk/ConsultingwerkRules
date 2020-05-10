@@ -1,28 +1,46 @@
-#!groovy
-
-stage 'Build OpenEdge rules'
-node ('master') {
-  checkout scm
-  withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
-    sh "git rev-parse HEAD > current-commit"
-    def currCommit = readFile('current-commit').replace("\n", "").replace("\r", "")
-    sh "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true -Dgit.commit=${currCommit}"
+pipeline {
+  agent { label 'master' }
+  options {
+    buildDiscarder(logRotator(numToKeepStr:'10'))
+    timeout(time: 15, unit: 'MINUTES')
+    skipDefaultCheckout()
   }
-  archiveArtifacts artifacts: 'target/*-plugin-*.jar'
-  step([$class: 'Publisher', reportFilenamePattern: '**/testng-results.xml'])
 
-  if ("master" == env.BRANCH_NAME) {
-    withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
-      withCredentials([[$class: 'StringBinding', credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN']]) {
-        sh "mvn -Dsonar.host.url=http://sonar.riverside-software.fr -Dsonar.login=${env.SQ_TOKEN} sonar:sonar"
+  stages {
+    stage ('Build OpenEdge rules') {
+      steps {
+        checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
+        script {
+          withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
+            if (("master" == env.BRANCH_NAME) || ("develop" == env.BRANCH_NAME) || env.BRANCH_NAME.startsWith("release") || env.BRANCH_NAME.startsWith("hotfix")) {
+              sh "git rev-parse HEAD > current-commit"
+              def currCommit = readFile('current-commit').replace("\n", "").replace("\r", "")
+              sh "mvn clean install -Dmaven.test.failure.ignore=true -Dgit.commit=${currCommit}"
+            } else {
+              sh "mvn clean package -Dmaven.test.failure.ignore=true"
+            }
+          }
+        }
+        archiveArtifacts artifacts: 'target/*.jar'
+        step([$class: 'Publisher', reportFilenamePattern: '**/testng-results.xml'])
       }
     }
-  } else {
-    withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
-      withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'GitHub-GQuerret', usernameVariable: 'GH_LOGIN', passwordVariable: 'GH_PASSWORD'], [$class: 'StringBinding', credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN']]) {
-        sh "mvn -Dsonar.host.url=http://sonar.riverside-software.fr -Dsonar.login=${env.SQ_TOKEN} -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${env.BRANCH_NAME.substring(3)} -Dsonar.github.repository=consultingwerk/ConsultingwerkRules -Dsonar.github.oauth=${env.GH_PASSWORD} sonar:sonar"
+
+    stage ('SonarQube analysis') {
+      steps {
+        script {
+          withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
+            withSonarQubeEnv(credentialsId: 'SQToken', installationName: 'RSSW') {
+              if (("master" == env.BRANCH_NAME) || ("develop" == env.BRANCH_NAME)) {
+                // sh "mvn -Dsonar.branch.name=${env.BRANCH_NAME} sonar:sonar"
+              } else {
+                def targetBranch = env.BRANCH_NAME.startsWith("release") ? "master" : "develop"
+                // sh "mvn -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.branch.target=${targetBranch} sonar:sonar"
+              }
+            }
+          }
+        }
       }
     }
   }
 }
-
