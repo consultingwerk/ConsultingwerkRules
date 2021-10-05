@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.prorefactor.core.ABLNodeType;
 import org.prorefactor.core.JPNode;
-import org.prorefactor.core.nodetypes.BlockNode;
 import org.prorefactor.proparse.antlr4.Proparse;
 import org.prorefactor.treeparser.Parameter;
 import org.prorefactor.treeparser.ParseUnit;
@@ -29,7 +28,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
   public void execute(InputFile file, ParseUnit unit) {
     Set<String> subscribedEvents = getSubscribedEvents(unit.getTopNode());
 
-    for (Routine routine : unit.getRootScope().getRoutineMap().values()) {
+    for (Routine routine : unit.getRootScope().getRoutines()) {
       if (routine.getProgressType() != Proparse.METHOD)
         continue;
       if (!subscribedEvents.contains(routine.getName().toLowerCase(Locale.ENGLISH)))
@@ -43,7 +42,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
       Parameter firstParam = routine.getParameters().get(0);
       // Look for information of first parameter, and specifically datatype
       Variable var = (Variable) firstParam.getSymbol();
-      if ("System.Object".equalsIgnoreCase(var.getClassName()) && !hasCatchBlock((BlockNode) routine.getDefineNode())) {
+      if ("System.Object".equalsIgnoreCase(var.getDataType().getClassName()) && !hasCatchBlock(routine.getDefineNode())) {
         reportIssue(file, routine.getDefineNode(), "No CATCH block in .Net event handler " + routine.getName());
       }
     }
@@ -52,7 +51,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
   /**
    * Returns true if a method has a CATCH block at the root level
    */
-  public boolean hasCatchBlock(BlockNode codeBlock) {
+  public boolean hasCatchBlock(JPNode codeBlock) {
     // Find outer code block node
     JPNode outerCodeBlock = codeBlock.query(ABLNodeType.CODE_BLOCK).get(0);
     // Shouldn't be null, but better avoid NPE
@@ -89,13 +88,11 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
       JPNode param = node.getNextSibling().getDirectChildren().get(1);
       if (param.getType() != Proparse.INPUT)
         continue;
-      if (param.getFirstChild().getType() != Proparse.Widget_ref)
+      if (param.getFirstChild().getNodeType() != ABLNodeType.ATTRIBUTE_REF)
         continue;
-      if (param.getFirstChild().getDirectChildren().size() != 3)
+      if (param.getFirstChild().getFirstChild().getNodeType() != ABLNodeType.SYSTEM_HANDLE_REF)
         continue;
-      if (param.getFirstChild().getDirectChildren().get(0).getType() != Proparse.THISOBJECT)
-        continue;
-      if (param.getFirstChild().getDirectChildren().get(2).getType() != Proparse.ID)
+      if (param.getFirstChild().getFirstChild().getFirstChild().getNodeType() != ABLNodeType.THISOBJECT)
         continue;
       LOG.trace(" ... and the right type of argument ! Adding {} ",
           param.getFirstChild().getDirectChildren().get(2).getText());
