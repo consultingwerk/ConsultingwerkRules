@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'Linux-Office' }
+  agent { label 'Linux-Office03' }
   options {
     buildDiscarder(logRotator(numToKeepStr:'10'))
     timeout(time: 15, unit: 'MINUTES')
@@ -31,10 +31,10 @@ pipeline {
         script {
           withEnv(["PATH+MAVEN=${tool name: 'Maven 3', type: 'hudson.tasks.Maven$MavenInstallation'}/bin"]) {
             withSonarQubeEnv(credentialsId: 'SQToken', installationName: 'RSSW') {
-              if (("master" == env.BRANCH_NAME) || ("develop" == env.BRANCH_NAME)) {
+              if (("main" == env.BRANCH_NAME) || ("develop" == env.BRANCH_NAME)) {
                 // sh "mvn -Dsonar.branch.name=${env.BRANCH_NAME} sonar:sonar"
               } else {
-                def targetBranch = env.BRANCH_NAME.startsWith("release") ? "master" : "develop"
+                def targetBranch = env.BRANCH_NAME.startsWith("release") ? "main" : "develop"
                 // sh "mvn -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.branch.target=${targetBranch} sonar:sonar"
               }
             }
