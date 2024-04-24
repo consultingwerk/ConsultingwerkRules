@@ -86,7 +86,7 @@ public class EventWithoutCatch extends OpenEdgeProparseCheck {
       // Make sure the first (and only) param is an 'INPUT widget_ref', where first part is THIS-OBJECT and second part
       // is an ID
       JPNode param = node.getNextSibling().getDirectChildren().get(1);
-      if (param.getType() != Proparse.INPUT)
+      if (param.getNodeType() != ABLNodeType.PARAMETER_ITEM)
         continue;
       if (param.getFirstChild().getNodeType() != ABLNodeType.ATTRIBUTE_REF)
         continue;
