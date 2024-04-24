@@ -4,7 +4,7 @@
 
   <groupId>eu.rssw.sonar.openedge</groupId>
   <artifactId>consultingwerk-rules-plugin</artifactId>
-  <version>1.0.8-SNAPSHOT</version>
+  <version>1.0.9</version>
   <packaging>sonar-plugin</packaging>
 
   <name>Consultingwerk rules for OpenEdge plugin</name>
