@@ -52,7 +52,7 @@
     <dependency>
       <groupId>eu.rssw.openedge.checks</groupId>
       <artifactId>openedge-checks</artifactId>
-      <version>3.0.0</version>
+      <version>3.9.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -111,14 +111,42 @@
           <pluginClass>${sonar.pluginClass}</pluginClass>
           <basePlugin>openedge</basePlugin>
           <requirePlugins>openedge:3.0.0</requirePlugins>
-          <pluginApiMinVersion>9.14</pluginApiMinVersion>
+          <pluginApiMinVersion>10.14</pluginApiMinVersion>
           <sonarLintSupported>true</sonarLintSupported>
+          <jreMinVersion>17</jreMinVersion>
+          <skipDependenciesPackaging>true</skipDependenciesPackaging>
+          <requiredForLanguages>oe,oedb</requiredForLanguages>
           <archive>
             <manifestEntries>
               <Implementation-Build>${git.commit}</Implementation-Build>
             </manifestEntries>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+              <resources>
+                <resource>LICENSE</resource>
+                <resource>LICENSE.txt</resource>
+                <resource>NOTICE</resource>
+                <resource>NOTICE.txt</resource>
+              </resources>
+            </transformer>
+          </transformers>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

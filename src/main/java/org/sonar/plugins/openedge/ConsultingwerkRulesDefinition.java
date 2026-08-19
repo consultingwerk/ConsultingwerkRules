@@ -1,6 +1,7 @@
 package org.sonar.plugins.openedge;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -21,18 +22,21 @@ public class ConsultingwerkRulesDefinition implements RulesDefinition {
   @SuppressWarnings("rawtypes")
   @Override
   public void define(Context context) {
-    NewRepository repository = context.createRepository(REPOSITORY_KEY, Constants.LANGUAGE_KEY).setName(
+    var repository = context.createRepository(REPOSITORY_KEY, Constants.LANGUAGE_KEY).setName(
         REPOSITORY_NAME);
-    AnnotationBasedRulesDefinition annotationLoader = new AnnotationBasedRulesDefinition(repository,
-        Constants.LANGUAGE_KEY, runtime);
-    annotationLoader.addRuleClasses(false, Arrays.<Class> asList(ConsultingwerkChecksRegistration.ppCheckClasses()));
+    var annotationLoader = new AnnotationBasedRulesDefinition(repository, Constants.LANGUAGE_KEY, runtime);
+    List<Class> list = new ArrayList<>();
+    list.addAll(ConsultingwerkRulesChecksProvider.ppCheckClasses());
+    annotationLoader.addRuleClasses(false, list);
+
     repository.done();
 
-    NewRepository dbRepository = context.createRepository(DB_REPOSITORY_KEY, Constants.DB_LANGUAGE_KEY).setName(
+    var repository2 = context.createRepository(DB_REPOSITORY_KEY, Constants.DB_LANGUAGE_KEY).setName(
         REPOSITORY_NAME);
-    AnnotationBasedRulesDefinition annotationLoader2 = new AnnotationBasedRulesDefinition(dbRepository,
-        Constants.DB_LANGUAGE_KEY, runtime);
-    annotationLoader2.addRuleClasses(false, Arrays.<Class> asList(ConsultingwerkChecksRegistration.dbCheckClasses()));
-    dbRepository.done();
+    var annotationLoader2 = new AnnotationBasedRulesDefinition(repository2, Constants.DB_LANGUAGE_KEY, runtime);
+    list = new ArrayList<>();
+    list.addAll(ConsultingwerkRulesChecksProvider.dbCheckClasses());
+    annotationLoader2.addRuleClasses(false, list);
+    repository2.done();
   }
 }
