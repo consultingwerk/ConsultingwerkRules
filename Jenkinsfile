@@ -4,6 +4,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr:'10'))
     timeout(time: 15, unit: 'MINUTES')
     skipDefaultCheckout()
+    disableConcurrentBuilds()
   }
 
   stages {
@@ -21,7 +22,7 @@ pipeline {
             }
           }
         }
-        archiveArtifacts artifacts: 'target/*.jar'
+        archiveArtifacts artifacts: 'target/consultingwerk-rules-plugin-*.jar'
         step([$class: 'Publisher', reportFilenamePattern: '**/testng-results.xml'])
       }
     }
